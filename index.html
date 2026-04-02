@@ -1,281 +1,231 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="ar">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dither / ASCII Effect Pro</title>
+    <title>AmanZaid | Cinematic Portfolio</title>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     
     <style>
-        body {
+        /* --- CSS: النمط السينمائي والتنسيق --- */
+        body, html {
             margin: 0;
-            background-color: #050505;
+            padding: 0;
+            width: 100%;
+            height: 100%;
             overflow: hidden;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #050505; /* أسود عميق */
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            color: white;
+        }
+
+        #container {
+            position: relative;
+            width: 100%;
+            height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            color: #ccc;
         }
 
         canvas {
-            box-shadow: 0 0 50px rgba(0,0,0,0.9);
-            max-width: 95vw;
-            max-height: 95vh;
-            background-image: 
-                linear-gradient(45deg, #151515 25%, transparent 25%), 
-                linear-gradient(-45deg, #151515 25%, transparent 25%), 
-                linear-gradient(45deg, transparent 75%, #151515 75%), 
-                linear-gradient(-45deg, transparent 75%, #151515 75%);
-            background-size: 20px 20px;
-            background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
-            border: 1px solid #222;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 1;
         }
 
-        #fileInput { display: none; }
+        .content {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+            pointer-events: none;
+        }
 
-        .tp-container {
+        h1 {
+            font-size: clamp(2.5rem, 8vw, 5rem);
+            letter-spacing: 10px;
+            text-transform: uppercase;
+            margin: 0;
+            font-weight: 900;
+            /* تأثير الوهج السينمائي */
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.4),
+                         0 0 40px rgba(255, 255, 255, 0.1);
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            font-weight: 300;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            opacity: 0; /* سيتحكم GSAP في إظهاره */
+            margin-top: 15px;
+            color: #aaa;
+        }
+
+        .nav-ui {
+            position: absolute;
+            bottom: 40px;
+            display: flex;
+            gap: 20px;
+            padding: 15px 30px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(15px); /* تأثير الزجاج */
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50px;
+            z-index: 20;
+            pointer-events: all;
+            opacity: 0;
+        }
+
+        .nav-ui a {
+            color: #fff;
+            text-decoration: none;
+            font-size: 0.8rem;
+            font-weight: 500;
+            letter-spacing: 1px;
+            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .nav-ui a:hover {
+            transform: scale(1.2);
+            text-shadow: 0 0 15px #fff;
+        }
+
+        /* تأثير حبيبات الفيلم القديم */
+        .overlay {
             position: fixed;
-            bottom: 20px;
-            right: 20px;
-            z-index: 100;
-            width: 340px;
-            max-height: 90vh;
-            overflow-y: auto;
-            direction: ltr; /* لضمان ظهور واجهة التحكم بشكل صحيح */
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('https://grainy-gradients.vercel.app/noise.svg');
+            opacity: 0.04;
+            pointer-events: none;
+            z-index: 30;
         }
-        
-        .tp-container::-webkit-scrollbar { width: 6px; }
-        .tp-container::-webkit-scrollbar-thumb { background: #444; border-radius: 3px; }
     </style>
 </head>
 <body>
 
-    <input type="file" id="fileInput" accept="image/*">
-    <canvas id="canvas"></canvas>
-    <div class="tp-container"></div>
+    <div class="overlay"></div>
 
-    <script src="https://cdn.jsdelivr.net/npm/tweakpane@3.1.9/dist/tweakpane.min.js"></script>
+    <div id="container">
+        <canvas id="particleCanvas"></canvas>
+        
+        <div class="content">
+            <h1 id="typed-title"></h1>
+            <div class="subtitle">Creative Developer & Visual Artist</div>
+        </div>
+
+        <div class="nav-ui">
+            <a href="#">INSTAGRAM</a>
+            <a href="#">TELEGRAM</a>
+            <a href="#">GITHUB</a>
+        </div>
+    </div>
 
     <script>
-        const canvas = document.getElementById('canvas');
-        const ctx = canvas.getContext('2d', {观察: true, willReadFrequently: true });
-        const fileInput = document.getElementById('fileInput');
+        /* --- JS: الجسيمات التفاعلية وتأثير الكتابة --- */
+        const canvas = document.getElementById('particleCanvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        const mouse = { x: null, y: null, radius: 150 };
 
-        // --- SVG HANDLING SETUP ---
-        const svgInput = document.createElement('input');
-        svgInput.type = 'file';
-        svgInput.accept = '.svg';
-        svgInput.style.display = 'none';
-        document.body.appendChild(svgInput);
-
-        let customSVGPath = null;
-        let customSVGViewBox = { x: 0, y: 0, w: 100, h: 100 };
-
-        let sourceImage = new Image();
-        sourceImage.crossOrigin = "Anonymous"; 
-        sourceImage.onload = () => render();
-        // صورة افتراضية للبدء
-        sourceImage.src = 'https://ik.imagekit.io/sqiqig7tz/woman.jpg';
-
-        const params = {
-            mode: 'halftone',      
-            shape: 'circle',       
-            cellSize: 10,          
-            baseScale: 0.9,        
-            gap: 1,                
-            bgColor: '#111111',
-            useColor: true,
-            monoColor: '#ffffff',
-            contrast: 0,          
-            intensity: 1.0,       
-            uploadBtn: () => fileInput.click(),
-            loadSVGBtn: () => svgInput.click(),
-            saveBtn: () => saveImage()
-        };
-
-        const pane = new Tweakpane.Pane({ 
-            container: document.querySelector('.tp-container'),
-            title: 'Dither / ASCII Effect Pro' 
+        window.addEventListener('mousemove', (e) => {
+            mouse.x = e.x;
+            mouse.y = e.y;
         });
 
-        const f1 = pane.addFolder({ title: 'Grid & Color Settings' });
-        f1.addInput(params, 'cellSize', { min: 4, max: 40, step: 1, label: 'Cell Size' }).on('change', render);
-        f1.addInput(params, 'gap', { min: 0, max: 20, step: 0.25, label: 'Gap' }).on('change', render);
-        f1.addInput(params, 'contrast', { min: -100, max: 100, step: 1, label: 'Contrast' }).on('change', render);
-        f1.addInput(params, 'bgColor', { label: 'Background' }).on('change', render);
-        f1.addInput(params, 'useColor', { label: 'Original Color' }).on('change', render);
-        f1.addInput(params, 'monoColor', { label: 'Foreground Color' }).on('change', render);
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resize);
+        resize();
 
-        const f2 = pane.addFolder({ title: 'Algorithm Mode' });
-        f2.addInput(params, 'mode', {
-            options: {
-                'Static (Flat)': 'flat', 'Stretch Vertical': 'stretch_v', 'Stretch Horizontal': 'stretch_h',
-                'Checkerboard (Alt)': 'checker', 'Glitch (Luma>Offset)': 'glitch', 'Pixel Melt (Drip)': 'melt',
-                'Crosshatch': 'crosshatch', 'Rotation (Luma>Angle)': 'rotation', 'Halftone (Luma>Size)': 'halftone',
-                'Inverse (Dark>Size)': 'inv_halftone', 'Random Size (Chaos)': 'random_size', 'Random Rotation': 'random_rot',
-                'Opacity (Luma>Alpha)': 'opacity', 'Inv. Opacity (Dark>Alpha)': 'inv_opacity', 'Threshold (Hard Cut)': 'threshold',
-                'Flow Field (Direction)': 'flow', 'Edge Detect (Outline)': 'edges', 'Mosaic Jitter (Scatter)': 'jitter',
-                'Posterize (Levels)': 'posterize', 'Interference (Moiré)': 'interference', 'CRT TV (Scanline)': 'crt_scan',
-                'Bio-Organic (Cellular)': 'bio', 'Eraser (Noise)': 'eraser',
-            },
-            label: 'Mode'
-        }).on('change', render);
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 1.5 + 0.5;
+                this.baseX = this.x;
+                this.baseY = this.y;
+                this.density = (Math.random() * 30) + 1;
+            }
 
-        f2.addInput(params, 'baseScale', { min: 0.1, max: 3.0, step: 0.025, label: 'Scale Factor' }).on('change', render);
-        f2.addInput(params, 'intensity', { min: 0, max: 5.0, step: 0.05, label: 'Effect Power' }).on('change', render);
+            draw() {
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.closePath();
+                ctx.fill();
+            }
 
-        const f3 = pane.addFolder({ title: 'Shape Geometry' });
-        const shapeInput = f3.addInput(params, 'shape', {
-            options: {
-                'Custom SVG': 'custom', 'Circle': 'circle', 'Square': 'rect', 'Triangle': 'triangle',
-                'Octagon': 'octagon', 'Star': 'star', 'Cross': 'cross', 'Rect Vertical': 'rect_v',
-                'Rect Horizontal': 'rect_h', 'Hexagon Vertical': 'hex_v', 'Diagonal /': 'line_diag_r',
-                'Diagonal \\': 'line_diag_l', 'Chevron': 'chevron', 'Trapezoid': 'trapezoid',
-                'Semi-Circle Top': 'semi_top', 'Semi-Circle Bottom': 'semi_bottom', 'Square Hollow': 'rect_hollow',
-                'Spiral': 'spiral', 'Concentric Circles': 'concentric', 'Gear (Cog)': 'gear',
-                'Flower (5 Petals)': 'flower', 'Shuriken': 'shuriken', 'Lightning': 'lightning',
-                'Diamond Hollow': 'diamond_hollow', 'Windmill': 'windmill', 'Leaf': 'leaf', 'Pacman Ghost': 'ghost'
-            },
-            label: 'Shape'
-        });
+            update() {
+                let dx = mouse.x - this.x;
+                let dy = mouse.y - this.y;
+                let distance = Math.sqrt(dx * dx + dy * dy);
+                let forceDirectionX = dx / distance;
+                let forceDirectionY = dy / distance;
+                let maxDistance = mouse.radius;
+                let force = (maxDistance - distance) / maxDistance;
+                let directionX = forceDirectionX * force * this.density;
+                let directionY = forceDirectionY * force * this.density;
 
-        const svgBtn = f3.addButton({ title: 'Load SVG File...', hidden: true });
-        shapeInput.on('change', (ev) => {
-            svgBtn.hidden = ev.value !== 'custom';
-            render();
-        });
-        svgBtn.on('click', () => params.loadSVGBtn());
-
-        pane.addSeparator();
-        pane.addButton({ title: 'Upload Image' }).on('click', params.uploadBtn);
-        pane.addButton({ title: 'Save Image' }).on('click', params.saveBtn);
-
-        fileInput.addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = (ev) => {
-                sourceImage = new Image();
-                sourceImage.onload = render;
-                sourceImage.src = ev.target.result;
-            };
-            reader.readAsDataURL(file);
-        });
-
-        svgInput.addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = (ev) => {
-                const svgContent = ev.target.result;
-                const parser = new DOMParser();
-                const doc = parser.parseFromString(svgContent, "image/svg+xml");
-                const pathElem = doc.querySelector('path');
-                const svgElem = doc.querySelector('svg');
-                if (!pathElem) { alert("Please use an SVG with <path> elements."); return; }
-                customSVGPath = new Path2D(pathElem.getAttribute('d'));
-                if (svgElem) {
-                    const viewBox = svgElem.getAttribute('viewBox');
-                    if (viewBox) {
-                        const parts = viewBox.split(/\s+|,/).map(parseFloat);
-                        customSVGViewBox = { x: parts[0], y: parts[1], w: parts[2], h: parts[3] };
+                if (distance < mouse.radius) {
+                    this.x -= directionX;
+                    this.y -= directionY;
+                } else {
+                    if (this.x !== this.baseX) {
+                        let dx = this.x - this.baseX;
+                        this.x -= dx / 10;
                     }
-                }
-                render();
-            };
-            reader.readAsText(file);
-        });
-
-        function render() {
-            if (!sourceImage.width) return;
-            const maxDisplay = 1600;
-            const aspect = sourceImage.width / sourceImage.height;
-            let dw = sourceImage.width;
-            let dh = sourceImage.height;
-            if (dw > maxDisplay) { dw = maxDisplay; dh = dw / aspect; }
-            canvas.width = dw; canvas.height = dh;
-
-            ctx.fillStyle = params.bgColor;
-            ctx.fillRect(0, 0, dw, dh);
-
-            const tmpCnvs = document.createElement('canvas');
-            tmpCnvs.width = dw; tmpCnvs.height = dh;
-            const tmpCtx = tmpCnvs.getContext('2d');
-            tmpCtx.drawImage(sourceImage, 0, 0, dw, dh);
-            const imgData = tmpCtx.getImageData(0, 0, dw, dh).data;
-            const step = params.cellSize;
-
-            const hex = params.monoColor.replace(/^#/, '');
-            const mR = parseInt(hex.substring(0, 2), 16), mG = parseInt(hex.substring(2, 4), 16), mB = parseInt(hex.substring(4, 6), 16);
-            const contrastFactor = (259 * (params.contrast + 255)) / (255 * (259 - params.contrast));
-
-            for (let y = 0; y < dh; y += step) {
-                for (let x = 0; x < dw; x += step) {
-                    const pIdx = ((y + Math.floor(step/2)) * dw + (x + Math.floor(step/2))) * 4;
-                    if (pIdx >= imgData.length) continue;
-
-                    let r = imgData[pIdx], g = imgData[pIdx + 1], b = imgData[pIdx + 2], a = imgData[pIdx + 3];
-                    if (a < 20) continue;
-
-                    r = Math.max(0, Math.min(255, contrastFactor * (r - 128) + 128));
-                    g = Math.max(0, Math.min(255, contrastFactor * (g - 128) + 128));
-                    b = Math.max(0, Math.min(255, contrastFactor * (b - 128) + 128));
-                    const luma = (0.299*r + 0.587*g + 0.114*b) / 255;
-
-                    let scX = params.baseScale, scY = params.baseScale, rot = 0, offX = 0, offY = 0, alpha = 1.0;
-
-                    switch (params.mode) {
-                        case 'halftone': scX = scY = luma * params.baseScale * 1.5; break;
-                        case 'inv_halftone': scX = scY = (1.0 - luma) * params.baseScale * 1.5; break;
-                        case 'rotation': rot = luma * Math.PI; break;
-                        case 'glitch': offX = (luma - 0.5) * step * 1.5 * params.intensity; break;
-                        case 'melt': offY = luma * step * 2 * params.intensity; scX = scY = luma * params.baseScale; break;
-                        case 'edges': 
-                            let idxN = pIdx + step*4;
-                            let lN = (0.299*imgData[idxN] + 0.587*imgData[idxN+1] + 0.114*imgData[idxN+2])/255 || luma;
-                            scX = scY = Math.abs(luma - lN) * 5 * params.baseScale * params.intensity; 
-                            break;
-                        // يمكن إضافة باقي الحالات هنا بنفس الطريقة...
-                        default: scX = scY = luma * params.baseScale;
+                    if (this.y !== this.baseY) {
+                        let dy = this.y - this.baseY;
+                        this.y -= dy / 10;
                     }
-
-                    ctx.save();
-                    ctx.translate(x + step/2 + offX, y + step/2 + offY);
-                    ctx.rotate(rot);
-                    ctx.scale(scX, scY);
-                    ctx.fillStyle = params.useColor ? `rgba(${r},${g},${b},${alpha})` : `rgba(${mR},${mG},${mB},${alpha})`;
-                    drawShape(ctx, 0, 0, Math.max(0, step - params.gap), params.shape);
-                    ctx.restore();
                 }
             }
         }
 
-        function drawShape(ctx, x, y, size, type) {
-            const r = size / 2;
-            if (type === 'custom' && customSVGPath) {
-                const scale = size / Math.max(customSVGViewBox.w, customSVGViewBox.h);
-                ctx.save();
-                ctx.scale(scale, scale);
-                ctx.translate(-customSVGViewBox.w / 2 - customSVGViewBox.x, -customSVGViewBox.h / 2 - customSVGViewBox.y);
-                ctx.fill(customSVGPath);
-                ctx.restore();
-                return;
+        function init() {
+            particles = [];
+            for (let i = 0; i < 200; i++) {
+                particles.push(new Particle());
             }
-            ctx.beginPath();
-            if (type === 'circle') ctx.arc(x, y, r, 0, Math.PI * 2);
-            else if (type === 'rect') ctx.rect(x-r, y-r, size, size);
-            else if (type === 'triangle') { ctx.moveTo(x, y-r); ctx.lineTo(x+r, y+r); ctx.lineTo(x-r, y+r); ctx.closePath(); }
-            // تم اختصار باقي الأشكال لضمان عمل الكود الأساسي بشكل مثالي
-            ctx.fill();
         }
 
-        function saveImage() {
-            const l = document.createElement('a');
-            l.download = `art-effect-${Date.now()}.png`;
-            l.href = canvas.toDataURL();
-            l.click();
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (let i = 0; i < particles.length; i++) {
+                particles[i].draw();
+                particles[i].update();
+            }
+            requestAnimationFrame(animate);
         }
+
+        // تأثير الكتابة (Typed Text) لاسمك
+        const titleText = "AMAN ZAID";
+        const titleElement = document.getElementById('typed-title');
+        let charIndex = 0;
+
+        function typeEffect() {
+            if (charIndex < titleText.length) {
+                titleElement.innerHTML += titleText.charAt(charIndex);
+                charIndex++;
+                setTimeout(typeEffect, 150);
+            } else {
+                // إظهار العناصر الأخرى بعد انتهاء الكتابة باستخدام GSAP
+                gsap.to(".subtitle", { opacity: 0.6, y: -10, duration: 1.5 });
+                gsap.to(".nav-ui", { opacity: 1, bottom: "50px", duration: 1, ease: "back.out(1.7)" });
+            }
+        }
+
+        init();
+        animate();
+        setTimeout(typeEffect, 500); // تأخير بسيط لبدء الكتابة
     </script>
 </body>
 </html>
