@@ -3,275 +3,238 @@
 <head>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <meta name="theme-color" content="#5d4037"/>
-    <meta http-equiv="X-UA-Compatible" content="ie=edge"/>
-    <title>SALEM | سـالـم - النمط الفيكتوري</title>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Playfair+Display:400,700|Cinzel:700&display=swap"/>
+    <title>Judy Abbott | رسالة إلى صاحب الظل الطويل</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Playfair+Display:400,700|Dancing+Script:700&display=swap"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"/>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/typed.js/2.0.10/typed.min.js"></script>
     <style>
         :root {
-            /* ألوان فيكتورية دافئة (جلد، ورق قديم، ذهب عتيق) */
-            --bg-dark: #121212; /* خلفية الغرفة */
-            --leather-bg: #2b1d16; /* لون البطاقة الجلدي */
-            --parchment: #e2d1b3; /* لون الورق القديم */
-            --antique-gold: #c5a059;
-            --deep-burgundy: #5d4037;
-            --text-dark: #3e2723;
-            --text-light: #e6f1ff;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+            --parchment: #f4e4bc;
+            --ink: #2c1e1a;
+            --seal-red: #8b0000;
+            --gold-trim: #c5a059;
         }
 
         body {
-            background: var(--bg-dark);
-            /* إضافة قوام خفيف للخلفية (مثل قماش المخمل) */
-            background-image: url('https://www.transparenttextures.com/patterns/dark-velvet.png');
-            width: 100vw;
+            background: #1a1a1a;
+            /* خلفية توحي بغرفة مكتب خشبية قديمة */
+            background-image: url('https://www.transparenttextures.com/patterns/dark-wood.png');
             height: 100vh;
-            overflow: hidden;
+            margin: 0;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-family: 'Playfair Display', serif;
-        }
-
-        /* تصميم البطاقة الفيكتورية */
-        .vcard {
-            width: 92%;
-            max-width: 400px;
-            height: 580px;
-            background: var(--leather-bg);
-            background-image: url('https://www.transparenttextures.com/patterns/leather.png'); /* قوام جلدي */
-            border-radius: 15px; /* حواف أقل استدارة */
-            /* إطار مزدوج مزخرف (ذهبي وبني) */
-            border: 8px double var(--antique-gold);
-            outline: 2px solid var(--deep-burgundy);
-            outline-offset: -12px;
-            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.9), inset 0 0 50px rgba(0,0,0,0.5);
-            position: relative;
             overflow: hidden;
-            transition: transform 0.5s ease, box-shadow 0.5s ease;
-        }
-        
-        /* تأثير ميلان بسيط عند التمرير */
-        .vcard:hover {
-            transform: translateY(-5px) rotateX(2deg);
-            box-shadow: 0 40px 70px rgba(0, 0, 0, 0.95);
+            perspective: 1000px;
         }
 
-        .header {
-            height: 35%;
+        /* تأثير "الظل الطويل" الذي يتحرك في الخلفية */
+        body::before {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: -10%;
+            width: 30%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            transform: skewX(-25deg);
+            filter: blur(40px);
+            animation: shadowMove 8s ease-in-out infinite;
+        }
+
+        @keyframes shadowMove {
+            0%, 100% { transform: skewX(-25deg) scaleY(1); opacity: 0.3; }
+            50% { transform: skewX(-30deg) scaleY(1.2); opacity: 0.5; }
+        }
+
+        .envelope {
+            width: 90%;
+            max-width: 400px;
+            height: 550px;
+            background: var(--parchment);
+            background-image: url('https://www.transparenttextures.com/patterns/parchment.png');
+            border-radius: 5px;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.8);
             position: relative;
-            background: var(--deep-burgundy);
-            /* زخرفة علوية فيكتورية */
-            background-image: url('https://www.transparenttextures.com/patterns/az-subtle.png');
-            border-bottom: 4px solid var(--antique-gold);
+            padding: 40px 25px;
+            border: 1px solid #d4c3a3;
+            transform-style: preserve-3d;
+            transition: 0.6s ease;
         }
 
-        /* إزالة الأمواج العصرية واستبدالها بزخرفة ثابتة */
-        .wave_bg {
-            display: none;
-        }
-        
-        .victorian-ornament {
+        /* طابع بريدي قديم */
+        .stamp {
             position: absolute;
             top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 80%;
-            height: 40px;
-            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="20" viewBox="0 0 100 20"><path d="M0 10 Q 25 0, 50 10 Q 75 20, 100 10" stroke="%23c5a059" fill="none" stroke-width="1"/></svg>');
-            background-repeat: repeat-x;
-            opacity: 0.6;
+            right: 20px;
+            width: 60px;
+            height: 70px;
+            background: #d4c3a3;
+            border: 2px dashed var(--ink);
+            padding: 5px;
+            filter: grayscale(0.5);
         }
 
-        /* تحسين إطار الصورة الشخصية */
-        .profile_pic_content {
-            width: 130px;
-            height: 130px;
+        .header-content {
+            text-align: left;
+            margin-bottom: 30px;
+            border-bottom: 1px solid rgba(44, 30, 26, 0.2);
+        }
+
+        .header-content h2 {
+            font-family: 'Dancing Script', cursive;
+            color: var(--ink);
+            font-size: 1.8rem;
+            margin-bottom: 5px;
+        }
+
+        .profile_area {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 20px;
             border-radius: 50%;
-            position: absolute;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            top: 100%;
             overflow: hidden;
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.8);
-            /* إطار ذهبي سميك مزخرف */
-            border: 6px solid var(--antique-gold);
-            background-color: #000;
-            z-index: 10;
+            border: 4px double var(--gold-trim);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
         }
 
         .profile_video {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            /* إضافة تأثير تعتيق (Sepia) خفيف للفيديو */
-            filter: sepia(0.5) contrast(1.1);
+            filter: sepia(0.6) contrast(1.2);
         }
 
-        /* منطقة المحتوى يشبه الورق القديم */
-        .card_content {
-            padding-top: 85px;
-            height: 65%;
+        .letter-body {
+            font-family: 'Playfair Display', serif;
+            color: var(--ink);
+            line-height: 1.8;
             text-align: center;
-            background: var(--parchment);
-            background-image: url('https://www.transparenttextures.com/patterns/parchment.png'); /* قوام ورق قديم */
-            position: relative;
         }
 
-        /* تحسين الاسم ليناسب النمط القديم */
-        .satan {
-            margin-bottom: 15px;
-            padding: 0 20px;
-        }
-        
         .satan h4 {
-            font-family: 'Cinzel', serif; /* خط نقش كلاسيكي */
-            font-size: 2.2em;
-            letter-spacing: 6px;
-            color: var(--deep-burgundy);
-            font-weight: 700;
-            text-shadow: 1px 1px 0px rgba(255,255,255,0.5);
-            border-bottom: 1px solid rgba(93, 64, 55, 0.2);
-            display: inline-block;
-            padding-bottom: 5px;
+            font-family: 'Dancing Script', cursive;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            color: #1a1a1a;
         }
 
         .snuff {
-            min-height: 80px;
-            padding: 0 40px;
-            color: var(--text-dark);
-            font-size: 1em;
-            line-height: 1.6;
+            min-height: 100px;
+            font-size: 1.1rem;
             font-style: italic;
         }
 
         .social {
-            margin-top: 25px;
-            position: relative;
-            z-index: 11;
-        }
-
-        .social div {
+            margin-top: 30px;
             display: flex;
             justify-content: center;
-            align-items: center;
-            gap: 12px;
-            flex-wrap: wrap;
+            gap: 15px;
         }
 
-        /* أيقونات بلمسة معدنية عتيقة */
         .social i {
-            padding: 12px;
-            font-size: 1.2em;
-            background: var(--deep-burgundy);
-            border-radius: 5px; /* حواف مربعة أكثر */
-            border: 2px solid var(--antique-gold);
-            color: var(--antique-gold);
-            transition: 0.3s ease;
-            box-shadow: 3px 3px 5px rgba(0,0,0,0.4);
+            font-size: 1.4rem;
+            color: var(--ink);
+            opacity: 0.7;
+            transition: 0.3s;
         }
 
-        .social a:hover i { 
-            color: var(--parchment) !important; 
-            background: #3e2723;
-            transform: translateY(-3px);
-            box-shadow: 5px 5px 10px rgba(0,0,0,0.6);
+        .social a:hover i {
+            opacity: 1;
+            transform: scale(1.2) rotate(5deg);
+            color: var(--seal-red);
         }
 
-        /* ختم شمعي فيكتوري أسفل البطاقة (اختياري، يضيف لمسة جمالية) */
-        .victorian-seal {
+        /* الختم الشمعي الشهير */
+        .wax-seal {
             position: absolute;
-            bottom: 50px;
-            right: 30px;
-            width: 60px;
-            height: 60px;
-            background: #8b0000;
+            bottom: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 70px;
+            height: 70px;
+            background: var(--seal-red);
             border-radius: 50%;
-            box-shadow: inset 0 0 10px rgba(0,0,0,0.5), 2px 2px 5px rgba(0,0,0,0.4);
-            opacity: 0.8;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.4), inset 0 0 10px rgba(0,0,0,0.5);
             display: flex;
             justify-content: center;
             align-items: center;
-            color: var(--antique-gold);
-            font-family: 'Cinzel', serif;
-            font-size: 1.5em;
-            transform: rotate(-15deg);
-            pointer-events: none;
+            color: var(--gold-trim);
+            font-family: 'Dancing Script', cursive;
+            font-size: 1.8rem;
+            cursor: pointer;
+            z-index: 10;
         }
 
-        .footer-text {
+        .wax-seal::after {
+            content: "J";
+            font-weight: bold;
+        }
+
+        .footer {
             position: absolute;
             bottom: 15px;
             width: 100%;
-            font-size: 0.75em;
-            color: rgba(62, 39, 35, 0.7);
             text-align: center;
-            letter-spacing: 1px;
-            font-weight: 700;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: rgba(44, 30, 26, 0.5);
         }
     </style>
 </head>
 <body>
 
-<div class="vcard">
-    <div class="header">
-        <div class="victorian-ornament"></div>
-        <div class="profile_pic_content">
-            <video class="profile_video" autoplay loop muted playsinline>
-                <source src="https://files.catbox.moe/jvicv4.mp4" type="video/mp4">
-                Your browser does not support the video tag.
-            </video>
-        </div>
+<div class="envelope">
+    <div class="stamp">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/3/36/Seal_of_the_United_States_Post_Office_Department.png" style="width:100%; opacity:0.6">
     </div>
 
-    <div class="card_content">
+    <div class="header-content">
+        <h2>عزيزي صاحب الظل الطويل..</h2>
+    </div>
+
+    <div class="profile_area">
+        <video class="profile_video" autoplay loop muted playsinline>
+            <source src="https://files.catbox.moe/jvicv4.mp4" type="video/mp4">
+        </video>
+    </div>
+
+    <div class="letter-body">
         <div class="satan">
             <h4>SALEM</h4>
         </div>
         
         <div class="snuff">
-            <h5 class="typed_text"></h5>
+            <span class="typed_text"></span>
         </div>
 
         <div class="social">
-            <div>
-                <a href="https://t.me/kokksha" title="Telegram"><i class="fab fa-telegram"></i></a>
-                <a href="https://www.facebook.com/share/15KQ2NmX9V/" title="Facebook"><i class="fab fa-facebook"></i></a>
-                <a href="https://www.instagram.com/_u_vf?igsh=bXRqd2Z4ZWhteW94" title="Instagram"><i class="fab fa-instagram"></i></a>
-                <a href="https://github.com/salemalshamrie" title="GitHub"><i class="fab fa-github"></i></a>
-                <a href="tg://settings" title="Profile"><i class="fas fa-user"></i></a>
-                <a href="https://g.co/kgs/pXVXQxK" title="Football"><i class="fas fa-futbol"></i></a>
-                <a href="https://uokerbala.edu.iq/" title="University"><i class="fas fa-university"></i></a>
-            </div>
+            <a href="https://t.me/kokksha"><i class="fab fa-telegram-plane"></i></a>
+            <a href="https://github.com/salemalshamrie"><i class="fab fa-github"></i></a>
+            <a href="https://www.instagram.com/_u_vf"><i class="fab fa-instagram"></i></a>
+            <a href="https://uokerbala.edu.iq/"><i class="fas fa-university"></i></a>
         </div>
-        
-        <div class="victorian-seal">S</div>
     </div>
 
-    <p class="footer-text">
-        EST. 2024 | SALEM AL-SHAMMARI | CREATIVE ARTISAN
-    </p>
+    <div class="wax-seal"></div>
+    
+    <p class="footer">مدرسة چيريش هوم - لندن | 1912</p>
 </div>
 
 <script>
     var options = {
         strings: [
-            "Creative Artisan & Web Designer.", 
-            "Crafting digital antiquities.", 
-            "<span style='color: #8b0000; font-weight: bold;'>BELIEVE IN YOURSELF</span>, NOTHING IS IMPOSSIBLE."
+            "أكتب إليك هذه الأسطر من عالم الكود..", 
+            "تصميم الويب هو فني الذي أرسله للعالم.", 
+            "الجمال يكمن في التفاصيل الصغيرة يا سيدي.",
+            "<span style='color: #8b0000;'>كن مؤمناً بنفسك</span>، فالمستحيل مجرد كلمة."
         ],
-        typeSpeed: 60,
-        backSpeed: 40,
-        backDelay: 2500,
+        typeSpeed: 50,
+        backSpeed: 30,
+        backDelay: 2000,
         loop: true,
-        cursorChar: '📜', /* تغيير المؤشر لريشة كتابة */
+        cursorChar: '✒️',
     };
     var typed = new Typed(".typed_text", options);
 </script>
