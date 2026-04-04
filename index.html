@@ -1,242 +1,345 @@
-<!DOCTYPE HTML>
-<html lang="ar">
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
 <head>
-    <meta charset="utf-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Judy Abbott | رسالة إلى صاحب الظل الطويل</title>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Playfair+Display:400,700|Dancing+Script:700&display=swap"/>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"/>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/typed.js/2.0.10/typed.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dark Motion Gallery - Profile Update</title>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+
     <style>
-        :root {
-            --parchment: #f4e4bc;
-            --ink: #2c1e1a;
-            --seal-red: #8b0000;
-            --gold-trim: #c5a059;
+        /* --- CSS --- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
         body {
-            background: #1a1a1a;
-            /* خلفية توحي بغرفة مكتب خشبية قديمة */
-            background-image: url('https://www.transparenttextures.com/patterns/dark-wood.png');
+            background-color: #030303; /* أسود عميق جداً */
+            color: #ffffff;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             height: 100vh;
-            margin: 0;
             display: flex;
             justify-content: center;
             align-items: center;
             overflow: hidden;
-            perspective: 1000px;
         }
 
-        /* تأثير "الظل الطويل" الذي يتحرك في الخلفية */
-        body::before {
-            content: "";
-            position: absolute;
-            bottom: 0;
-            left: -10%;
-            width: 30%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.4);
-            transform: skewX(-25deg);
-            filter: blur(40px);
-            animation: shadowMove 8s ease-in-out infinite;
-        }
-
-        @keyframes shadowMove {
-            0%, 100% { transform: skewX(-25deg) scaleY(1); opacity: 0.3; }
-            50% { transform: skewX(-30deg) scaleY(1.2); opacity: 0.5; }
-        }
-
-        .envelope {
-            width: 90%;
-            max-width: 400px;
-            height: 550px;
-            background: var(--parchment);
-            background-image: url('https://www.transparenttextures.com/patterns/parchment.png');
-            border-radius: 5px;
-            box-shadow: 0 30px 60px rgba(0,0,0,0.8);
+        .carousel-container {
             position: relative;
-            padding: 40px 25px;
-            border: 1px solid #d4c3a3;
+            width: 100%;
+            max-width: 1400px;
+            height: 800px; /* زيادة الارتفاع ليتناسب مع البروفايل */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            perspective: 1500px; /* عمق ثلاثي الأبعاد */
+        }
+
+        .carousel-viewport {
+            position: relative;
+            width: 300px;
+            height: 400px;
             transform-style: preserve-3d;
-            transition: 0.6s ease;
+            margin-bottom: 20px; /* مسافة قبل معلومات العضو */
         }
 
-        /* طابع بريدي قديم */
-        .stamp {
+        .card {
             position: absolute;
-            top: 20px;
-            right: 20px;
-            width: 60px;
-            height: 70px;
-            background: #d4c3a3;
-            border: 2px dashed var(--ink);
-            padding: 5px;
-            filter: grayscale(0.5);
-        }
-
-        .header-content {
-            text-align: left;
-            margin-bottom: 30px;
-            border-bottom: 1px solid rgba(44, 30, 26, 0.2);
-        }
-
-        .header-content h2 {
-            font-family: 'Dancing Script', cursive;
-            color: var(--ink);
-            font-size: 1.8rem;
-            margin-bottom: 5px;
-        }
-
-        .profile_area {
-            width: 120px;
-            height: 120px;
-            margin: 0 auto 20px;
-            border-radius: 50%;
+            width: 100%;
+            height: 100%;
+            border-radius: 12px;
             overflow: hidden;
-            border: 4px double var(--gold-trim);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            background: #000;
+            border: 1px solid #1a1a1a;
+            cursor: pointer;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.9);
+            will-change: transform, opacity;
+            -webkit-mask-image: -webkit-radial-gradient(white, black);
         }
 
-        .profile_video {
+        .card img {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            filter: sepia(0.6) contrast(1.2);
+            filter: brightness(0.5) grayscale(100%);
+            transition: filter 0.6s ease;
         }
 
-        .letter-body {
-            font-family: 'Playfair Display', serif;
-            color: var(--ink);
-            line-height: 1.8;
-            text-align: center;
-        }
-
-        .satan h4 {
-            font-family: 'Dancing Script', cursive;
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-            color: #1a1a1a;
-        }
-
-        .snuff {
-            min-height: 100px;
-            font-size: 1.1rem;
-            font-style: italic;
-        }
-
-        .social {
-            margin-top: 30px;
+        /* --- تنسيقات معلومات العضو والبروفايل الجديدة --- */
+        .member-info-wrapper {
             display: flex;
-            justify-content: center;
-            gap: 15px;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            z-index: 100;
+            pointer-events: none;
+            margin-top: 40px;
+            opacity: 0; /* سنحركها بالـ JS */
         }
 
-        .social i {
-            font-size: 1.4rem;
-            color: var(--ink);
-            opacity: 0.7;
-            transition: 0.3s;
-        }
-
-        .social a:hover i {
-            opacity: 1;
-            transform: scale(1.2) rotate(5deg);
-            color: var(--seal-red);
-        }
-
-        /* الختم الشمعي الشهير */
-        .wax-seal {
-            position: absolute;
-            bottom: -25px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 70px;
-            height: 70px;
-            background: var(--seal-red);
+        .profile-avatar {
+            width: 80px;
+            height: 80px;
             border-radius: 50%;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.4), inset 0 0 10px rgba(0,0,0,0.5);
+            border: 2px solid #333;
+            overflow: hidden;
+            margin-bottom: 15px;
+            box-shadow: 0 0 20px rgba(255,255,255,0.1);
+        }
+
+        .profile-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .member-name {
+            font-size: 2rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            margin-bottom: 5px;
+            color: #fff;
+            text-shadow: 0 0 10px rgba(255,255,255,0.3);
+        }
+
+        .member-role {
+            color: #888;
+            font-size: 1rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        /* --- التحكم --- */
+        .controls-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+            margin-top: 40px;
+        }
+
+        .nav-arrow {
+            background: none;
+            border: 1px solid #222;
+            color: #666;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s ease;
             display: flex;
             justify-content: center;
             align-items: center;
-            color: var(--gold-trim);
-            font-family: 'Dancing Script', cursive;
-            font-size: 1.8rem;
+        }
+
+        .nav-arrow:hover {
+            border-color: #fff;
+            color: #fff;
+        }
+
+        .dots-container {
+            display: flex;
+            gap: 8px;
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+            background: #222;
+            border-radius: 50%;
             cursor: pointer;
-            z-index: 10;
+            transition: 0.3s;
         }
 
-        .wax-seal::after {
-            content: "J";
-            font-weight: bold;
+        .dot.active {
+            background: #fff;
+            transform: scale(1.4);
         }
 
-        .footer {
-            position: absolute;
-            bottom: 15px;
-            width: 100%;
-            text-align: center;
-            font-size: 0.7rem;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            color: rgba(44, 30, 26, 0.5);
+        @media (max-width: 768px) {
+            .carousel-viewport { width: 220px; height: 320px; }
+            .member-name { font-size: 1.5rem; }
+            .profile-avatar { width: 60px; height: 60px; }
         }
     </style>
 </head>
 <body>
 
-<div class="envelope">
-    <div class="stamp">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/3/36/Seal_of_the_United_States_Post_Office_Department.png" style="width:100%; opacity:0.6">
+<div class="carousel-container">
+    <div class="carousel-viewport" id="carousel">
+        <div class="card"><img src="https://files.catbox.moe/hc08q5.jpeg" alt="Image 1"></div>
+        <div class="card"><img src="https://files.catbox.moe/enhg5s.jpeg" alt="Image 2"></div>
+        <div class="card"><img src="https://files.catbox.moe/iyvhvc.jpeg" alt="Image 3"></div>
+        <div class="card"><img src="https://files.catbox.moe/x0qe5i.gif" alt="Image 4"></div>
+        <div class="card"><img src="https://files.catbox.moe/af6pu8.gif" alt="Image 5"></div>
+        <div class="card"><img src="https://files.catbox.moe/9pxgka.gif" alt="Image 6"></div>
+        <div class="card"><img src="https://files.catbox.moe/4210ko.jpeg" alt="Image 7"></div>
+        <div class="card"><img src="https://files.catbox.moe/uhch5y.jpeg" alt="Image 8"></div>
+        <div class="card"><img src="https://files.catbox.moe/akm160.gif" alt="Image 9"></div>
+        <div class="card"><img src="https://files.catbox.moe/drdutv.gif" alt="Image 10"></div>
     </div>
 
-    <div class="header-content">
-        <h2>عزيزي صاحب الظل الطويل..</h2>
-    </div>
-
-    <div class="profile_area">
-        <video class="profile_video" autoplay loop muted playsinline>
-            <source src="https://files.catbox.moe/jvicv4.mp4" type="video/mp4">
-        </video>
-    </div>
-
-    <div class="letter-body">
-        <div class="satan">
-            <h4>SALEM</h4>
+    <div class="member-info-wrapper" id="memberInfo">
+        <div class="profile-avatar">
+            <img src="https://files.catbox.moe/j2l8oe.gif" alt="Profile Avatar" id="profileImg">
         </div>
-        
-        <div class="snuff">
-            <span class="typed_text"></span>
-        </div>
-
-        <div class="social">
-            <a href="https://t.me/kokksha"><i class="fab fa-telegram-plane"></i></a>
-            <a href="https://github.com/salemalshamrie"><i class="fab fa-github"></i></a>
-            <a href="https://www.instagram.com/_u_vf"><i class="fab fa-instagram"></i></a>
-            <a href="https://uokerbala.edu.iq/"><i class="fas fa-university"></i></a>
+        <div class="text-data">
+            <h2 class="member-name" id="memberName">Emily Kim</h2>
+            <p class="member-role" id="memberRole">Founder</p>
         </div>
     </div>
 
-    <div class="wax-seal"></div>
-    
-    <p class="footer">مدرسة چيريش هوم - لندن | 1912</p>
+    <div class="controls-wrapper">
+        <button class="nav-arrow left" aria-label="Previous">←</button>
+        <div class="dots-container">
+            <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+            <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+            <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+            <span class="dot"></span>
+        </div>
+        <button class="nav-arrow right" aria-label="Next">→</button>
+    </div>
 </div>
 
 <script>
-    var options = {
-        strings: [
-            "أكتب إليك هذه الأسطر من عالم الكود..", 
-            "تصميم الويب هو فني الذي أرسله للعالم.", 
-            "الجمال يكمن في التفاصيل الصغيرة يا سيدي.",
-            "<span style='color: #8b0000;'>كن مؤمناً بنفسك</span>، فالمستحيل مجرد كلمة."
-        ],
-        typeSpeed: 50,
-        backSpeed: 30,
-        backDelay: 2000,
-        loop: true,
-        cursorChar: '✒️',
-    };
-    var typed = new Typed(".typed_text", options);
+    /* --- JavaScript --- */
+    document.addEventListener("DOMContentLoaded", () => {
+        // مصفوفة المعلومات الـ 10
+        const teamMembers = [
+            { name: "Emily Kim", role: "Founder" },
+            { name: "Michael Steward", role: "Creative Director" },
+            { name: "Emma Rodriguez", role: "Lead Developer" },
+            { name: "Abstract Motion", role: "VFX Unit" },
+            { name: "Cyber Pulse", role: "Animation Unit" },
+            { name: "Dark Fluid", role: "Concept Art" },
+            { name: "Julia Gimmel", role: "UX Designer" },
+            { name: "Lisa Anderson", role: "Marketing" },
+            { name: "Digital Geometry", role: "Render Tech" },
+            { name: "Smoke Effect", role: "FX Unit" }
+        ];
+
+        const cards = document.querySelectorAll(".card");
+        const dots = document.querySelectorAll(".dot");
+        const memberInfoWrapper = document.getElementById("memberInfo");
+        const memberName = document.getElementById("memberName");
+        const memberRole = document.getElementById("memberRole");
+        const profileImg = document.getElementById("profileImg"); // صورة البروفايل
+        
+        let currentIndex = 0;
+        let isAnimating = false;
+
+        function updateCarousel(newIndex) {
+            if (isAnimating) return;
+            isAnimating = true;
+
+            currentIndex = (newIndex + cards.length) % cards.length;
+
+            const isMobile = window.innerWidth <= 768;
+            const xGap1 = isMobile ? 120 : 220;
+            const xGap2 = isMobile ? 210 : 400;
+
+            cards.forEach((card, i) => {
+                let offset = i - currentIndex;
+                
+                if (offset > Math.floor(cards.length / 2)) offset -= cards.length;
+                if (offset < -Math.floor(cards.length / 2)) offset += cards.length;
+
+                let x = 0, z = 0, scale = 1, opacity = 1, brightness = 0.5, grayscale = 100;
+                let zIndex = 10 - Math.abs(offset); 
+
+                if (offset === 0) {
+                    scale = 1.2; 
+                    z = 150;
+                    brightness = 1.1;
+                    grayscale = 0;
+                } else if (Math.abs(offset) === 1) {
+                    x = offset * xGap1;
+                    z = -100;
+                    scale = 0.9;
+                    opacity = 0.8;
+                } else if (Math.abs(offset) === 2) {
+                    x = offset * xGap2;
+                    z = -250;
+                    scale = 0.8;
+                    opacity = 0.4;
+                } else {
+                    x = offset > 0 ? 900 : -900;
+                    z = -600;
+                    opacity = 0;
+                }
+
+                gsap.set(card, { zIndex: zIndex });
+
+                gsap.to(card, {
+                    x: x,
+                    z: z,
+                    scale: scale,
+                    opacity: opacity,
+                    duration: 0.9,
+                    ease: "expo.out"
+                });
+
+                gsap.to(card.querySelector('img'), {
+                    filter: `brightness(${brightness}) grayscale(${grayscale}%)`,
+                    duration: 0.9
+                });
+            });
+
+            // تحريك حاوية المعلومات بأكملها (البروفايل والنصوص)
+            gsap.to(memberInfoWrapper, {
+                opacity: 0,
+                y: 20, // حركة لأسفل عند الاختفاء
+                scale: 0.9, // تصغير خفيف
+                duration: 0.3,
+                ease: "power2.in",
+                onComplete: () => {
+                    if(teamMembers[currentIndex]) {
+                        memberName.textContent = teamMembers[currentIndex].name;
+                        memberRole.textContent = teamMembers[currentIndex].role;
+                        // ملاحظة: صورة البروفايل واحدة للجميع في هذا الكود
+                    }
+                    // إعادة الظهور بحركة لأعلى
+                    gsap.to(memberInfoWrapper, { 
+                        opacity: 1, 
+                        y: 0, 
+                        scale: 1, 
+                        duration: 0.5, 
+                        ease: "back.out(1.7)" // تأثير ارتداد جميل
+                    });
+                }
+            });
+
+            dots.forEach((dot, i) => dot.classList.toggle("active", i === currentIndex));
+
+            setTimeout(() => { isAnimating = false; }, 850);
+        }
+
+        // المستمعات
+        document.querySelector(".nav-arrow.left").addEventListener("click", () => updateCarousel(currentIndex - 1));
+        document.querySelector(".nav-arrow.right").addEventListener("click", () => updateCarousel(currentIndex + 1));
+        
+        dots.forEach((dot, i) => dot.addEventListener("click", () => updateCarousel(i)));
+        cards.forEach((card, i) => card.addEventListener("click", () => updateCarousel(i)));
+
+        document.addEventListener("keydown", (e) => {
+            if (e.key === "ArrowLeft") updateCarousel(currentIndex - 1);
+            if (e.key === "ArrowRight") updateCarousel(currentIndex + 1);
+        });
+
+        let touchStartX = 0;
+        document.addEventListener("touchstart", (e) => touchStartX = e.changedTouches[0].screenX);
+        document.addEventListener("touchend", (e) => {
+            const touchEndX = e.changedTouches[0].screenX;
+            if (touchStartX - touchEndX > 60) updateCarousel(currentIndex + 1);
+            if (touchEndX - touchStartX > 60) updateCarousel(currentIndex - 1);
+        });
+
+        updateCarousel(0); // تشغيل أولي
+    });
 </script>
+
 </body>
 </html>
